@@ -1,5 +1,5 @@
 from django.db import models
-# from simple_history.models import HistoricalRecords
+from simple_history.models import HistoricalRecords
 
 from shop.models import Shop
 from product.models import Product
@@ -12,5 +12,5 @@ class Price(models.Model):
     price = models.FloatField()
     shop = models.ManyToManyField(Shop)
     product_url = models.CharField(max_length=255)
-    # history = HistoricalRecords()
+    history = HistoricalRecords()
 

@@ -1,0 +1,20 @@
+version: "3.9"
+
+volumes:
+  db_pricecompare:
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+      - db_pricecompare:/app/db
+    tty: true
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
