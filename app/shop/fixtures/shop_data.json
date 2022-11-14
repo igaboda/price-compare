@@ -1,0 +1,32 @@
+[
+	{
+		"model": "shop.shop",
+		"pk": 1,
+		"fields": {
+			"shop_name": "rossman",
+			"shop_url": "https://www.rossmann.pl/",
+			"search_param": "szukaj?Page=1&PageSize=96&Search={}",
+			"parser_type": "soup"
+		}
+	},
+	{
+		"model": "shop.shop",
+		"pk": 2,
+		"fields": {
+			"shop_name": "hebe",
+			"shop_url": "https://www.hebe.pl/",
+			"search_param": "search?lang=pl_PL&q={}",
+			"parser_type": "soup"
+		}
+	},
+	{
+		"model": "shop.shop",
+		"pk": 3,
+		"fields": {
+			"shop_name": "superpharm",
+			"shop_url": "https://www.superpharm.pl/",
+			"search_param": "catalogsearch/result/?categories=e-DROGERIA&q={}",
+			"parser_type": "webdriver"
+		}
+	}
+]

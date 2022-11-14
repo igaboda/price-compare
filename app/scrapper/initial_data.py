@@ -1,12 +1,13 @@
 import os
 
-from webscrapper import Scrapper, ShopParser
+from web_scrapper import Scrapper
+from shop_parser import get_shop_parser
 
 # print(os.getcwd())
 os.chdir('C:\\Users\\iboda\\PycharmProjects\\price-compare\\app\\scrapper')
 
 
-search_phrases = (line.strip() for line in open('search_phrases.txt'))
+search_phrases = (line.strip() for line in open('sample_search_phrases.txt'))
 # search_phrases = ['yope balsam', ]
 
 shops_dict = {
@@ -27,7 +28,10 @@ shops_dict = {
     ]
 }
 
-shops = [ShopParser(name, *attr) for name, attr in shops_dict.items()]
+shops = []
+for name, attr in shops_dict.items():
+    shop_parser = get_shop_parser(name)
+    shops.append(shop_parser(name, *attr))
 
 scrapper = Scrapper(search_phrases, shops)
 products = scrapper.search_by_phrases()
