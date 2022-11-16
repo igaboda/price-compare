@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
         for prod in products:
             if not _utils.product_data_exists(prod):
-                # self.stdout.write('Inserting product...')
+                self.stdout.write('Inserting product...')
                 _utils.create_product_from_dict(prod)
         self.stdout.write('Data load complete!')
 

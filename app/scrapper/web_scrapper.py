@@ -8,16 +8,23 @@ from pandas import DataFrame
 
 
 class Scrapper:
-    """Webscrapper object for scrapping shop urls for given search phrases.
-    Should be used together with specific shop Parser objects"""
+    """Webscrapper object for scrapping shop urls for given search phrases
+    or scrapping specific product url.
+    Should be used together with specific ShopParser objects"""
 
     # _driver_path = 'C:/Users/iboda/Downloads/chromedriver_win32/chromedriver.exe'
     _driver_path = '/usr/local/bin/chromedriver'
 
-    def __init__(self, search_phrases: Union[Tuple, List], shops: List['Shop']):
-        self.search_phrases = search_phrases
+    def __init__(self, shops: List['Shop'],
+                 search_phrases: Union[Tuple, List] = []):
         self.shops = shops
+        self.search_phrases = search_phrases
         self.products = []
+
+    def _find_shop_by_id(self, _id):
+        """Iterates through list of shops to find the one with specified id."""
+        shop = [sh for sh in self.shops if sh.shop_id == _id][0]
+        return shop
 
     def _get_response_text(self, url: str) -> str:
         """Retrieves response from requested url."""
@@ -49,7 +56,8 @@ class Scrapper:
             .apply(lambda row: ' '.join(row.values), axis=1) \
             .str.replace(' |,|\+|-|', '')
         sort_order = ['search_phrase', 'name_to_sort', 'shop_id']
-        df_products = df_products.sort_values(by=sort_order)
+        df_products = df_products.sort_values(by=sort_order)\
+            .drop(['search_phrase', 'name_to_sort'], axis=1)
         return df_products.to_dict('records')
 
     def search_by_single_phrase(self, phrase: str) -> List[Dict]:
@@ -76,14 +84,20 @@ class Scrapper:
     def search_by_phrases(self) -> List[Dict]:
         """Searches each shop for each phrase in list. Returns list of found
         products for all searched phrases."""
-        prod_search_results = []
-        for s_phrase in self.search_phrases:
-            products = self.search_by_single_phrase(s_phrase)
-            prod_search_results.extend(products)
+        if self.search_phrases:
+            prod_search_results = []
+            for s_phrase in self.search_phrases:
+                products = self.search_by_single_phrase(s_phrase)
+                prod_search_results.extend(products)
 
-        self.products = self._transform_searched_data(prod_search_results)
+            self.products = self._transform_searched_data(prod_search_results)
 
         return self.products
+
+    def scrape_product_url(self, prod_url: str, shop_id: int) -> Dict:
+        """Gets product data from specific product url."""
+        # todo: call ShopParser method for scrapping product page
+        pass
 
 
 

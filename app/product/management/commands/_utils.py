@@ -10,6 +10,7 @@ def shop_data_exists() -> bool:
     shops = Shop.object.all()
     return len(shops) > 0
 
+
 def product_data_exists(prod: Dict) -> bool:
     """Checks if product with given name and url already exists."""
     exists = Product.objects.filter(name=prod['name'], url=prod['url']).exists()
@@ -18,16 +19,10 @@ def product_data_exists(prod: Dict) -> bool:
 
 def create_product_from_dict(prod: Dict) -> None:
     """Creates Product in database based on given dictionary."""
-    shop = Shop.objects.get(id=prod['shop_id'])
-    product = Product.objects.create(
-        name=prod['name'],
-        description=prod['description'],
-        size=prod['size'],
-        url=prod['url'],
-        image_url=['image_url'],
-        shop=shop
-    )
-    Price.objects.create(
-        price=prod['price'],
-        product=product
-    )
+    shop_id = prod.pop('shop_id')
+    shop = Shop.objects.get(id=shop_id)
+
+    price = prod.pop('price')
+
+    product = Product.objects.create(shop=shop, **prod)
+    Price.objects.create(price=price, product=product)
