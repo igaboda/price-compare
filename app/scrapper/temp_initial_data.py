@@ -33,6 +33,6 @@ for name, attr in shops_dict.items():
     shop_parser = get_shop_parser(name)
     shops.append(shop_parser(name, *attr))
 
-scrapper = Scrapper(search_phrases, shops)
+scrapper = Scrapper(shops, search_phrases)
 products = scrapper.search_by_phrases()
 print(products)

@@ -24,6 +24,9 @@ class ShopParser:
     def parse_data(self, *args):
         raise NotImplementedError('Method must be implemented')
 
+    def extract_product_data(self, *args):
+        raise NotImplementedError('Method must be implemented')
+
 
 class RossmanParser(ShopParser):
     """Parser for extracting Rossman shop data from BeautifulSoup object."""
@@ -69,6 +72,10 @@ class RossmanParser(ShopParser):
 
         return all_products
 
+    def extract_product_data(self, product_url: str) -> Dict:
+        # todo: implement method for scrapping product page
+        pass
+
 
 class HebeParser(ShopParser):
     """Parser for extracting Hebe shop data from BeautifulSoup object."""
@@ -106,6 +113,10 @@ class HebeParser(ShopParser):
             all_products.append(product)
 
         return all_products
+
+    def extract_product_data(self, product_url: str) -> Dict:
+        # todo: implement method for scrapping product page
+        pass
 
 
 class SuperpharmParser(ShopParser):
@@ -155,6 +166,10 @@ class SuperpharmParser(ShopParser):
 
         return all_products
 
+    def extract_product_data(self, product_url: str) -> Dict:
+        # todo: implement method for scrapping product page
+        pass
+
 
 def get_shop_parser(name: str) -> Union['RossmanParser', 'HebeParser',
                                         'SuperpharmParser', None]:
@@ -163,4 +178,8 @@ def get_shop_parser(name: str) -> Union['RossmanParser', 'HebeParser',
         'hebe': HebeParser,
         'superpharm': SuperpharmParser
     }
-    return parser_mapping.get(name)
+    parser = parser_mapping.get(name.lower())
+    if parser is None:
+        raise NotImplementedError('Parser for given shop not implemented')
+
+    return parser

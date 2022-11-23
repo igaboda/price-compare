@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
-from product.management.commands import _utils
+from libs import utils
 from scrapper.product_search import get_products_by_search_phrases
 
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Entrypoint for generate_initial_data command"""
-        if not _utils.shop_data_exists:
+        if not utils.shop_data_exists:
             self.stdout.write('Loading shop data...')
             call_command('loaddata', 'shop_data')
 
@@ -29,9 +29,9 @@ class Command(BaseCommand):
             return
 
         for prod in products:
-            if not _utils.product_data_exists(prod):
+            if not utils.product_exists(prod):
                 self.stdout.write('Inserting product...')
-                _utils.create_product_from_dict(prod)
+                utils.create_product_from_dict(prod)
         self.stdout.write('Data load complete!')
 
 
