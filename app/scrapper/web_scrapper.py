@@ -94,10 +94,6 @@ class Scrapper:
 
         return self.products
 
-    def scrape_product_url(self, prod_url: str, shop_id: int) -> Dict:
-        """Gets product data from specific product url."""
-        # todo: call ShopParser method for scrapping product page
-        pass
 
 
 

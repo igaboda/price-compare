@@ -35,9 +35,6 @@ def get_products_by_search_phrases(search_phrases: Union[Tuple, List, None]) -> 
     return products
 
 
-def get_prices_by_products(prod_urls: List):
-    # todo: implement methods for scrapping product page (in Scrapper and ShopParser)
-    pass
 
 
 

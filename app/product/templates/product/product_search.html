@@ -5,7 +5,7 @@ Product Search
 {% endblock %}
 
 {% block content %}
-<form action="/product-search" method="POST">
+<form action="" method="POST">
     {% csrf_token %}
     <div class="form-control {% if form.search_phrase.errors %}errors{% endif %}">
         {{ form.search_phrase }}

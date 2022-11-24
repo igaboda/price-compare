@@ -24,8 +24,19 @@ class ShopParser:
     def parse_data(self, *args):
         raise NotImplementedError('Method must be implemented')
 
-    def extract_product_data(self, *args):
-        raise NotImplementedError('Method must be implemented')
+    @staticmethod
+    def check_product_description(phrase: str, description: str) -> bool:
+        """Checks if all words from search phrase are included in product
+        description."""
+        phrase_list = phrase.split()
+        desc_list = description.split()
+
+        included = 0
+        for ph in phrase_list:
+            if ph in desc_list: included += 1
+
+        check = True if included == len(phrase_list) else False
+        return check
 
 
 class RossmanParser(ShopParser):
@@ -72,10 +83,6 @@ class RossmanParser(ShopParser):
 
         return all_products
 
-    def extract_product_data(self, product_url: str) -> Dict:
-        # todo: implement method for scrapping product page
-        pass
-
 
 class HebeParser(ShopParser):
     """Parser for extracting Hebe shop data from BeautifulSoup object."""
@@ -114,10 +121,6 @@ class HebeParser(ShopParser):
 
         return all_products
 
-    def extract_product_data(self, product_url: str) -> Dict:
-        # todo: implement method for scrapping product page
-        pass
-
 
 class SuperpharmParser(ShopParser):
     """Parser for extracting Superpharm shop data from search url.
@@ -143,6 +146,12 @@ class SuperpharmParser(ShopParser):
                     By.CLASS_NAME, 'result-title').text.lower()
                 product['description'] = el.find_element(
                     By.CLASS_NAME, 'result-description').text.lower()
+
+                # additional check to narrow down broad search results
+                prod_desc = product['name'] + ' ' + product['description']
+                if not self.check_product_description(phrase, prod_desc):
+                    continue
+
                 # price extraction
                 prod_price = el.find_element(
                     By.CLASS_NAME, 'price-wrapper') \
@@ -165,10 +174,6 @@ class SuperpharmParser(ShopParser):
                 all_products.append(product)
 
         return all_products
-
-    def extract_product_data(self, product_url: str) -> Dict:
-        # todo: implement method for scrapping product page
-        pass
 
 
 def get_shop_parser(name: str) -> Union['RossmanParser', 'HebeParser',

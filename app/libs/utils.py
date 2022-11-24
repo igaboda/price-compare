@@ -15,7 +15,7 @@ def product_exists(prod: Dict) -> Union['Product', None]:
     """Checks if product with given name and url already exists.
     If so, returns the product."""
     try:
-        product = Product.objects.get(name=prod['name'], url=prod['url'])
+        product = Product.objects.get(url=prod['url'])
     except Product.DoesNotExist:
         product = None
     return product
