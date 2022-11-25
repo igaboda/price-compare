@@ -1,3 +1,4 @@
+import os
 from typing import Union, Tuple, Dict, List
 
 import requests
@@ -20,6 +21,7 @@ class Scrapper:
         self.shops = shops
         self.search_phrases = search_phrases
         self.products = []
+        self.path_to_save = '/tests/data/'
 
     def _find_shop_by_id(self, _id):
         """Iterates through list of shops to find the one with specified id."""
@@ -31,6 +33,12 @@ class Scrapper:
         with requests.get(url) as response:
             resp_txt = response.text
         return resp_txt
+
+    def _save_response_to_file(self, resp_txt: str, file_name: str) -> None:
+        """Saves response text to file for later testing."""
+        with open(f'{os.getcwd()}{self.path_to_save}{file_name}.txt', 'w',
+                  encoding='utf-8') as file:
+            file.write(resp_txt)
 
     def _get_soup(self, url: str) -> BeautifulSoup:
         """Generates BeautifulSoup object based on response text of

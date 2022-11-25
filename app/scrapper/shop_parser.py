@@ -42,7 +42,7 @@ class ShopParser:
 class RossmanParser(ShopParser):
     """Parser for extracting Rossman shop data from BeautifulSoup object."""
 
-    def parse_data(self, soup: BeautifulSoup, phrase: str) -> List[Dict]:
+    def parse_data(self, soup: BeautifulSoup, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products in soup.
         Returns data per each product in list of dictionaries."""
         prod_els = soup.select('.tile-product')
@@ -87,7 +87,7 @@ class RossmanParser(ShopParser):
 class HebeParser(ShopParser):
     """Parser for extracting Hebe shop data from BeautifulSoup object."""
 
-    def parse_data(self, soup: BeautifulSoup, phrase: str) -> List[Dict]:
+    def parse_data(self, soup: BeautifulSoup, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products in soup.
         Returns data per each product in list of dictionaries."""
         prod_els = soup.select('.product-tile')
@@ -127,7 +127,7 @@ class SuperpharmParser(ShopParser):
     Uses Chrome webdriver."""
 
     def parse_data(self, search_url: str, webdriver_config: Dict,
-                   phrase: str, ) -> List[Dict]:
+                   phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products loaded on page."""
         with webdriver.Chrome(**webdriver_config) as driver:
             # print(driver.capabilities['chrome']['chromedriverVersion'])
