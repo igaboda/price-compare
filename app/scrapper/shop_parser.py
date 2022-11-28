@@ -126,52 +126,52 @@ class SuperpharmParser(ShopParser):
     """Parser for extracting Superpharm shop data from search url.
     Uses Chrome webdriver."""
 
-    def parse_data(self, search_url: str, webdriver_config: Dict,
-                   phrase: str = '') -> List[Dict]:
+    def parse_data(self, driver: webdriver, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products loaded on page."""
-        with webdriver.Chrome(**webdriver_config) as driver:
-            # print(driver.capabilities['chrome']['chromedriverVersion'])
-            driver.implicitly_wait(15)
-            driver.get(search_url)
-            # print(driver.current_url)
-            # driver.find_element(By.ID, 'btn-cookie-allow').click()
-            prod_els = driver.find_elements(By.CLASS_NAME, 'result-content')
-            if not prod_els:
-                return []
+        # page = driver.page_source
+        # f = codecs.open(f'{os.getcwd()}/tests/data/superpharm_test_data.html',
+        #                 'w', encoding='utf-8')
+        # f.write(page)
 
-            all_products = []
-            for el in prod_els:
-                product = self.initialize_product(phrase)
-                product['name'] = el.find_element(
-                    By.CLASS_NAME, 'result-title').text.lower()
-                product['description'] = el.find_element(
-                    By.CLASS_NAME, 'result-description').text.lower()
+        prod_els = driver.find_elements(By.CLASS_NAME, 'result-content')
+        if not prod_els:
+            return []
 
-                # additional check to narrow down broad search results
-                prod_desc = product['name'] + ' ' + product['description']
-                if not self.check_product_description(phrase, prod_desc):
-                    continue
+        all_products = []
+        for el in prod_els:
+            product = self.initialize_product(phrase)
+            product['name'] = el.find_element(
+                By.CLASS_NAME, 'result-title').text.lower()
+            product['description'] = el.find_element(
+                By.CLASS_NAME, 'result-description').text.lower()
 
-                # price extraction
-                prod_price = el.find_element(
-                    By.CLASS_NAME, 'price-wrapper') \
-                    .find_element(By.CLASS_NAME, 'after_special').text
-                prod_price = prod_price.replace(',', '.') \
-                    .replace(' zł', '')
-                product['price'] = float(prod_price)
-                # size extraction
-                prod_size = el.find_element(
-                    By.CLASS_NAME, 'custom-select-wrapper').text
-                product['size'] = prod_size.split(':')[-1]
-                # remaining fields
-                prod_img = el.find_element(
-                    By.CLASS_NAME, 'result-thumbnail')
-                product['image_url'] = prod_img.find_element(
-                    By.TAG_NAME, 'img').get_attribute('src')
-                product['url'] = prod_img.find_element(
-                    By.TAG_NAME, 'a').get_attribute('href')
+            # additional check to narrow down broad search results
+            prod_desc = product['name'] + ' ' + product['description']
+            if not self.check_product_description(phrase, prod_desc):
+                continue
 
-                all_products.append(product)
+            # price extraction
+            prod_price = el.find_element(
+                By.CLASS_NAME, 'price-wrapper') \
+                .find_element(By.CLASS_NAME, 'after_special').text
+            prod_price = prod_price.replace(',', '.') \
+                .replace(' zł', '')
+            product['price'] = float(prod_price)
+            # size extraction
+            prod_size = el.find_element(
+                By.CLASS_NAME, 'custom-select-wrapper').text
+            product['size'] = prod_size.split(':')[-1]
+            # remaining fields
+            prod_img = el.find_element(
+                By.CLASS_NAME, 'result-thumbnail')
+            product['image_url'] = prod_img.find_element(
+                By.TAG_NAME, 'img').get_attribute('src')
+            product['url'] = prod_img.find_element(
+                By.TAG_NAME, 'a').get_attribute('href')
+
+            all_products.append(product)
+
+        driver.close()
 
         return all_products
 

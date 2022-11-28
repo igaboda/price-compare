@@ -1,4 +1,5 @@
 import os
+import codecs
 from typing import Union, Tuple, Dict, List
 
 import requests
@@ -47,14 +48,21 @@ class Scrapper:
         soup = BeautifulSoup(resp_txt, features='html.parser')
         return soup
 
-    def _webdriver_config(self) -> Dict:
-        """Returns chrome webdriver options and service."""
+    def _get_webdriver(self, url: str) -> webdriver:
+        """Returns chrome webdriver with options."""
         options = webdriver.ChromeOptions()
         options.add_argument('--window-size=1920,1080')
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-setuid-sandbox')
-        return {'service': Service(self._driver_path), 'options': options}
+        webdriver_config = {'service': Service(self._driver_path),
+                            'options': options}
+
+        driver = webdriver.Chrome(**webdriver_config)
+        driver.implicitly_wait(15)
+        driver.get(url)
+
+        return driver
 
     def _transform_searched_data(self, prod_search_results: List[Dict]):
         """Processes raw data from search results. Returns cleaned and
@@ -82,8 +90,8 @@ class Scrapper:
                 soup = self._get_soup(search_url)
                 products = shop.parse_data(soup, phrase)
             elif shop.parser_type == 'webdriver':
-                webdriver_dict = self._webdriver_config()
-                products = shop.parse_data(search_url, webdriver_dict, phrase)
+                driver = self._get_webdriver(search_url)
+                products = shop.parse_data(driver, phrase)
 
             prod_all_shops.extend(products)
 
