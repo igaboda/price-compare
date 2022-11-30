@@ -106,7 +106,10 @@ class Scrapper:
                 products = self.search_by_single_phrase(s_phrase)
                 prod_search_results.extend(products)
 
-            self.products = self._transform_searched_data(prod_search_results)
+            if prod_search_results:
+                self.products = self._transform_searched_data(
+                    prod_search_results
+                )
 
         return self.products
 

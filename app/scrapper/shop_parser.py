@@ -51,6 +51,10 @@ class RossmanParser(ShopParser):
         if len(prod_els) == len(empty_els):
             return []
 
+        result_caption = soup.select('h4')[0]
+        if 'brak' in result_caption.text.lower():
+            return []
+
         all_products = []
         for el in prod_els:
             if 'skeleton' in el.attrs['class']:
@@ -129,9 +133,15 @@ class SuperpharmParser(ShopParser):
     def parse_data(self, driver: webdriver, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products loaded on page."""
         # page = driver.page_source
-        # f = codecs.open(f'{os.getcwd()}/tests/data/superpharm_test_data.html',
+        # f = codecs.open(f'{os.getcwd()}/tests/data/superpharm_test_nodata.html',
         #                 'w', encoding='utf-8')
         # f.write(page)
+
+        result_caption = driver.find_element(
+            By.CLASS_NAME, 'products-count-up'
+        ).text.replace('(', '')
+        if result_caption[:2] == '0 ':
+            return []
 
         prod_els = driver.find_elements(By.CLASS_NAME, 'result-content')
         if not prod_els:
