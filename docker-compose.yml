@@ -8,6 +8,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      shm_size: '1gb'
+    shm_size: '1gb'
     ports:
       - "8000:8000"
     volumes:

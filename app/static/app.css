@@ -1,0 +1,9 @@
+.prod-img img{
+    max-height: 100%;
+    width: auto;
+}
+.prod-img{
+    height: 212px;
+    max-width: auto;
+
+}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+Product Search
+{% endblock %}
+
+{% block content %}
+<form action="" method="POST">
+    {% csrf_token %}
+    <div class="form-control {% if form.search_phrase.errors %}errors{% endif %}">
+        {{ form.search_phrase }}
+        {{ form.search_phrase.errors }}
+    <button type="submit">Search</button>
+    </div>
+
+</form>
+{% endblock %}

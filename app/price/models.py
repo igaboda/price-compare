@@ -11,3 +11,5 @@ class Price(models.Model):
     price = models.FloatField()
     history = HistoricalRecords()
 
+    def __str__(self):
+        return f'{self.product.name} - {self.product.shop.shop_name} price'

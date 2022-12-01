@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}
+Product List
+{% endblock %}
+
+{% block content %}
+<div>
+
+    {% if products %}
+
+    <ul>
+        {% for product in products %}
+        <li>
+            <a href="{% if product.shop.shop_name != 'superpharm' %}{{ product.shop.shop_url }}{% endif %}{{ product.url }}" target="_blank">
+                <h3>{{ product.name }} - {{ product.shop.shop_name}}: {{ product.price.price }}</h3>
+                <p>{{ product.description }}, {{ product.size }}</p>
+                <div class="prod-img">
+                    <img src="{% if product.image_url|slice:'0:4' != 'http' %}https://{% endif %}{{ product.image_url }}">
+                </div>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% else %}
+
+    <p>Sorry, no products found:(</p>
+
+    {% endif %}
+
+</div>
+{% endblock %}
