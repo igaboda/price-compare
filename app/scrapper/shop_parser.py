@@ -41,6 +41,7 @@ class ShopParser:
 
 class RossmanParser(ShopParser):
     """Parser for extracting Rossman shop data from BeautifulSoup object."""
+    shop_name = 'rossman'
 
     def parse_data(self, soup: BeautifulSoup, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products in soup.
@@ -61,6 +62,7 @@ class RossmanParser(ShopParser):
                 continue
 
             product = self.initialize_product(phrase)
+            product['shop_name'] = self.shop_name
 
             prod_children = el.select_one('[class*=name]').findChildren()
             product['name'] = prod_children[0].text.lower()
@@ -90,6 +92,7 @@ class RossmanParser(ShopParser):
 
 class HebeParser(ShopParser):
     """Parser for extracting Hebe shop data from BeautifulSoup object."""
+    shop_name = 'hebe'
 
     def parse_data(self, soup: BeautifulSoup, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products in soup.
@@ -101,6 +104,7 @@ class HebeParser(ShopParser):
         all_products = []
         for el in prod_els:
             product = self.initialize_product(phrase)
+            product['shop_name'] = self.shop_name
 
             product['name'] = el.select_one('[class*=name]') \
                 .text.strip().lower()
@@ -129,6 +133,7 @@ class HebeParser(ShopParser):
 class SuperpharmParser(ShopParser):
     """Parser for extracting Superpharm shop data from search url.
     Uses Chrome webdriver."""
+    shop_name = 'superpharm'
 
     def parse_data(self, driver: webdriver, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products loaded on page."""
@@ -150,6 +155,8 @@ class SuperpharmParser(ShopParser):
         all_products = []
         for el in prod_els:
             product = self.initialize_product(phrase)
+            product['shop_name'] = self.shop_name
+
             product['name'] = el.find_element(
                 By.CLASS_NAME, 'result-title').text.lower()
             product['description'] = el.find_element(

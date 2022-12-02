@@ -31,8 +31,10 @@ class Scrapper:
 
     def _get_response_text(self, url: str) -> str:
         """Retrieves response from requested url."""
+        resp_txt = ''
         with requests.get(url) as response:
-            resp_txt = response.text
+            if response.status_code == 200:
+                resp_txt = response.text
         return resp_txt
 
     def _save_response_to_file(self, resp_txt: str, file_name: str) -> None:
