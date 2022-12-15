@@ -13,13 +13,24 @@ Product List
     <ul>
         {% for product in products %}
         <li>
-            <a href="{% if product.shop.shop_name != 'superpharm' %}{{ product.shop.shop_url }}{% endif %}{{ product.url }}" target="_blank">
-                <h3>{{ product.name }} - {{ product.shop.shop_name}}: {{ product.price.price }}</h3>
-                <p>{{ product.description }}, {{ product.size }}</p>
-                <div class="prod-img">
-                    <img src="{% if product.image_url|slice:'0:4' != 'http' %}https://{% endif %}{{ product.image_url }}">
-                </div>
-            </a>
+            <div>
+                <a href="{% if product.shop.shop_name != 'superpharm' %}{{ product.shop.shop_url }}{% endif %}{{ product.url }}" target="_blank">
+                    <h3>{{ product.name }} - {{ product.shop.shop_name}}: {{ product.price.price }}</h3>
+                    <p>{{ product.description }}, {{ product.size }}</p>
+                    <div class="prod-img">
+                        <img src="{% if product.image_url|slice:'0:4' != 'http' %}https://{% endif %}{{ product.image_url }}">
+                    </div>
+                </a>
+                {% if user.is_authenticated %}
+                <form action="{% url 'user:add-favorite' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="product-id" name="product-id" value="{{ product.id}}" />
+                    <button  name="follow" value="follow">
+                        Follow
+                    </button>
+                </form>
+                {% endif %}
+            </div>
         </li>
         {% endfor %}
     </ul>

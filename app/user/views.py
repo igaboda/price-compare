@@ -1,9 +1,11 @@
+from django.views import View
 from django.views.generic.edit import FormView
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 
 from user.forms import LoginForm
+from user.models import Favorite
 
 
 class UserLogin(FormView):
@@ -29,6 +31,16 @@ class UserLogin(FormView):
 def user_logout(request):
     logout(request)
     return redirect('product:product-search')
-    # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+class FavoritesHandler(View):
+    def post(self, request):
+        current_user = request.user
+        product_id = request.POST.get('product-id')
+        action = request.POST.get('follow')
+        if action == 'follow':
+            favorite = Favorite()
+            favorite.save()
+            favorite.user.add(current_user)
+            favorite.product_id.add(product_id)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
