@@ -41,7 +41,7 @@ class ProductSearchView(View):
 
             request.session['searched_products'] = prod_ids
 
-            return HttpResponseRedirect(reverse('search-results'))
+            return HttpResponseRedirect(reverse('product:search-results'))
 
         return render(request, 'product/product_search.html', {'form': form})
 
