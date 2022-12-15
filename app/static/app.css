@@ -1,3 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+
+html {
+  font-family: 'Quicksand', sans-serif;
+}
+
+h3 {
+  margin: 5px 0 5px 0;
+}
+body{
+  position: absolute;
+  top: 3rem;
+  background-color: #efe9f1;
+}
+#main-navigation {
+  background-color: #565656;
+  overflow: hidden;
+  width: 100%;
+  height: 3rem;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+#main-navigation ul {
+  list-style-type: none;
+  margin: 0;
+  padding-right: 5px;
+}
+#main-navigation li {
+  float: right;
+  text-align: center;
+  padding: 14px 16px;
+}
+#main-navigation a {
+  display: block;
+  text-decoration: none;
+  color: #efe9f1;
+  font-weight: bold;
+  margin-left: 1rem;
+}
+
+#main-navigation a:hover,
+#main-navigation a:active {
+  color: #cf79f1;
+}
+
 .prod-img img{
     max-height: 100%;
     width: auto;

@@ -7,14 +7,20 @@
     <title>{% block page_title%}Product Price Compare{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'app.css' %}">
 </head>
-<body>
 
-    <header id="main-navigation">
-        <nav>
-            <a href=""></a>
-            <a href=""></a>
-        </nav>
-    </header>
+<nav id="main-navigation">
+    <ul>
+        {% if user.is_authenticated %}
+        <li><a href="">Log out</a></li>
+        <li><a href="">Favourites</a></li>
+        {% else %}
+        <li><a href="">Log in</a></li>
+        {% endif %}
+        <li><a href="{% url 'product:product-search' %}">Product Search</a></li>
+    </ul>
+</nav>
+
+<body>
 
     {% block content %}
 
