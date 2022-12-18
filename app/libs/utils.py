@@ -7,7 +7,7 @@ from price.models import Price
 
 def shop_data_exists() -> bool:
     """Checks if shop data has already been loaded to the db."""
-    shops = Shop.object.all()
+    shops = Shop.objects.all()
     return len(shops) > 0
 
 
