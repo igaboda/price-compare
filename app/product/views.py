@@ -14,6 +14,10 @@ class ProductSearchView(View):
     """Handles product search form. Submission of form launches web scraper."""
     def get(self, request):
         form = ProductSearchForm()
+
+        if 'searched_products' in self.request.session:
+            del self.request.session['searched_products']
+
         return render(request, 'product/product_search.html', {'form': form})
 
     def post(self, request):

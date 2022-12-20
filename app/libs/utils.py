@@ -3,6 +3,7 @@ from typing import Dict, Union
 from shop.models import Shop
 from product.models import Product
 from price.models import Price
+from user.models import Favorite
 
 
 def shop_data_exists() -> bool:
@@ -41,3 +42,12 @@ def update_product_price(product: 'Product', prod_dict: Dict) -> 'Product':
 
     return product
 
+
+def handle_favorite(fav_dict: Dict, user: 'User') -> None:
+    """Creates or removes user's favorite product depending on specified action."""
+    if fav_dict['action'] == 'follow':
+        favorite = Favorite()
+        favorite.save()
+        favorite.user.add(user)
+        favorite.product_id.add(fav_dict['product-id'])
+    return None

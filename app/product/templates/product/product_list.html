@@ -21,15 +21,13 @@ Product List
                         <img src="{% if product.image_url|slice:'0:4' != 'http' %}https://{% endif %}{{ product.image_url }}">
                     </div>
                 </a>
-                {% if user.is_authenticated %}
                 <form action="{% url 'user:add-favorite' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" id="product-id" name="product-id" value="{{ product.id}}" />
-                    <button  name="follow" value="follow">
+                    <button  name="action" value="follow">
                         Follow
                     </button>
                 </form>
-                {% endif %}
             </div>
         </li>
         {% endfor %}
