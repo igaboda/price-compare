@@ -49,10 +49,10 @@ def handle_favorite(fav_dict: Dict, user: 'User') -> None:
         favorite = Favorite()
         favorite.save()
         favorite.user.add(user)
-        favorite.product_id.add(fav_dict['product-id'])
+        favorite.product.add(fav_dict['product-id'])
     elif fav_dict['action'] == 'unfollow':
         favorite = Favorite.objects.get(
-            user=user, product_id__id=fav_dict['product-id']
+            user=user, product__id=fav_dict['product-id']
         )
         favorite.delete()
     return None

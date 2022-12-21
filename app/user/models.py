@@ -43,5 +43,5 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Favorite(models.Model):
     """Favorite products per user"""
-    product_id = models.ManyToManyField(Product, related_name='favorites')
+    product = models.ManyToManyField(Product, related_name='favorites')
     user = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='favorites')
