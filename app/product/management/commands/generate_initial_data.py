@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Entrypoint for generate_initial_data command"""
-        if not utils.shop_data_exists:
+        if not utils.shop_data_exists():
             self.stdout.write('Loading shop data...')
             call_command('loaddata', 'shop_data')
 
