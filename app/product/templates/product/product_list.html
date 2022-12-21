@@ -24,9 +24,21 @@ Product List
                 <form action="{% url 'user:add-favorite' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" id="product-id" name="product-id" value="{{ product.id}}" />
-                    <button  name="action" value="follow">
-                        Follow
-                    </button>
+                    {% if user.is_authenticated %}
+                        {% if product.user_favs %}
+                        <button  name="action" value="unfollow">
+                            Unfollow
+                        </button>
+                        {% else %}
+                        <button  name="action" value="follow">
+                            Follow
+                        </button>
+                        {% endif %}
+                    {% else %}
+                        <button  name="action" value="follow">
+                            Follow
+                        </button>
+                    {% endif %}
                 </form>
             </div>
         </li>

@@ -12,7 +12,6 @@ class UserLogin(FormView):
     """Logs in user if already exists, otherwise creates user and logs in."""
     form_class = LoginForm
     template_name = 'user/login.html'
-    success_url = '/'
 
     def form_valid(self, form):
         email = form.cleaned_data.get('email')
@@ -30,6 +29,7 @@ class UserLogin(FormView):
 
         login(self.request, user)
 
+        # restore product ids to session
         if prod_ids:
             self.request.session['searched_products'] = prod_ids
 
@@ -43,7 +43,7 @@ class UserLogin(FormView):
     def get_success_url(self):
         if 'searched_products' in self.request.session:
             return reverse('product:search-results')
-        super().get_success_url()
+        return reverse('product:product-search')
 
 
 def user_logout(request):
@@ -52,7 +52,8 @@ def user_logout(request):
 
 
 class FavoritesHandler(View):
-    """Follows or unfollows given product in user's favorites. If user not authenticated then redirects to login view."""
+    """Follows or unfollows given product in user's favorites. If user not
+    authenticated then redirects to login view."""
     def post(self, request):
         product_id = request.POST.get('product-id')
         action = request.POST.get('action')

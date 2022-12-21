@@ -3,9 +3,11 @@ from django.http import HttpResponseRedirect
 from django.views import View
 from django.views.generic import ListView
 from django.urls import reverse
+from django.db.models import Prefetch
 
 from product.forms import ProductSearchForm
 from product.models import Product
+from user.models import Favorite
 from scrapper.product_search import get_products_by_search_phrases
 from libs import utils
 
@@ -58,8 +60,20 @@ class ProductSearchResultsView(ListView):
 
     def get_queryset(self):
         product_ids = self.request.session.get('searched_products', None)
+        user = self.request.user
         print(product_ids)
+
         data = None
         if product_ids:
             data = super().get_queryset().filter(id__in=product_ids)
+
+            if user.is_authenticated:
+                data = data.prefetch_related(
+                    Prefetch(
+                        'favorites',
+                        queryset=Favorite.objects.filter(user=user),
+                        to_attr='user_favs'
+                    )
+                )
+
         return data
