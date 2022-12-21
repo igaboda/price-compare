@@ -1,3 +1,5 @@
+import os
+import codecs
 from typing import Union, Tuple, Dict, List
 
 import requests
@@ -20,6 +22,7 @@ class Scrapper:
         self.shops = shops
         self.search_phrases = search_phrases
         self.products = []
+        self.path_to_save = '/tests/data/'
 
     def _find_shop_by_id(self, _id):
         """Iterates through list of shops to find the one with specified id."""
@@ -28,9 +31,17 @@ class Scrapper:
 
     def _get_response_text(self, url: str) -> str:
         """Retrieves response from requested url."""
+        resp_txt = ''
         with requests.get(url) as response:
-            resp_txt = response.text
+            if response.status_code == 200:
+                resp_txt = response.text
         return resp_txt
+
+    def _save_response_to_file(self, resp_txt: str, file_name: str) -> None:
+        """Saves response text to file for later testing."""
+        with open(f'{os.getcwd()}{self.path_to_save}{file_name}.txt', 'w',
+                  encoding='utf-8') as file:
+            file.write(resp_txt)
 
     def _get_soup(self, url: str) -> BeautifulSoup:
         """Generates BeautifulSoup object based on response text of
@@ -39,14 +50,21 @@ class Scrapper:
         soup = BeautifulSoup(resp_txt, features='html.parser')
         return soup
 
-    def _webdriver_config(self) -> Dict:
-        """Returns chrome webdriver options and service."""
+    def _get_webdriver(self, url: str) -> webdriver:
+        """Returns chrome webdriver with options."""
         options = webdriver.ChromeOptions()
         options.add_argument('--window-size=1920,1080')
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-setuid-sandbox')
-        return {'service': Service(self._driver_path), 'options': options}
+        webdriver_config = {'service': Service(self._driver_path),
+                            'options': options}
+
+        driver = webdriver.Chrome(**webdriver_config)
+        driver.implicitly_wait(15)
+        driver.get(url)
+
+        return driver
 
     def _transform_searched_data(self, prod_search_results: List[Dict]):
         """Processes raw data from search results. Returns cleaned and
@@ -74,8 +92,8 @@ class Scrapper:
                 soup = self._get_soup(search_url)
                 products = shop.parse_data(soup, phrase)
             elif shop.parser_type == 'webdriver':
-                webdriver_dict = self._webdriver_config()
-                products = shop.parse_data(search_url, webdriver_dict, phrase)
+                driver = self._get_webdriver(search_url)
+                products = shop.parse_data(driver, phrase)
 
             prod_all_shops.extend(products)
 
@@ -90,7 +108,10 @@ class Scrapper:
                 products = self.search_by_single_phrase(s_phrase)
                 prod_search_results.extend(products)
 
-            self.products = self._transform_searched_data(prod_search_results)
+            if prod_search_results:
+                self.products = self._transform_searched_data(
+                    prod_search_results
+                )
 
         return self.products
 

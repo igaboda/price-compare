@@ -41,8 +41,9 @@ class ShopParser:
 
 class RossmanParser(ShopParser):
     """Parser for extracting Rossman shop data from BeautifulSoup object."""
+    shop_name = 'rossman'
 
-    def parse_data(self, soup: BeautifulSoup, phrase: str) -> List[Dict]:
+    def parse_data(self, soup: BeautifulSoup, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products in soup.
         Returns data per each product in list of dictionaries."""
         prod_els = soup.select('.tile-product')
@@ -51,12 +52,17 @@ class RossmanParser(ShopParser):
         if len(prod_els) == len(empty_els):
             return []
 
+        result_caption = soup.select('h4')[0]
+        if 'brak' in result_caption.text.lower():
+            return []
+
         all_products = []
         for el in prod_els:
             if 'skeleton' in el.attrs['class']:
                 continue
 
             product = self.initialize_product(phrase)
+            product['shop_name'] = self.shop_name
 
             prod_children = el.select_one('[class*=name]').findChildren()
             product['name'] = prod_children[0].text.lower()
@@ -86,8 +92,9 @@ class RossmanParser(ShopParser):
 
 class HebeParser(ShopParser):
     """Parser for extracting Hebe shop data from BeautifulSoup object."""
+    shop_name = 'hebe'
 
-    def parse_data(self, soup: BeautifulSoup, phrase: str) -> List[Dict]:
+    def parse_data(self, soup: BeautifulSoup, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products in soup.
         Returns data per each product in list of dictionaries."""
         prod_els = soup.select('.product-tile')
@@ -97,6 +104,7 @@ class HebeParser(ShopParser):
         all_products = []
         for el in prod_els:
             product = self.initialize_product(phrase)
+            product['shop_name'] = self.shop_name
 
             product['name'] = el.select_one('[class*=name]') \
                 .text.strip().lower()
@@ -125,53 +133,62 @@ class HebeParser(ShopParser):
 class SuperpharmParser(ShopParser):
     """Parser for extracting Superpharm shop data from search url.
     Uses Chrome webdriver."""
+    shop_name = 'superpharm'
 
-    def parse_data(self, search_url: str, webdriver_config: Dict,
-                   phrase: str, ) -> List[Dict]:
+    def parse_data(self, driver: webdriver, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products loaded on page."""
-        with webdriver.Chrome(**webdriver_config) as driver:
-            # print(driver.capabilities['chrome']['chromedriverVersion'])
-            driver.implicitly_wait(15)
-            driver.get(search_url)
-            # print(driver.current_url)
-            # driver.find_element(By.ID, 'btn-cookie-allow').click()
-            prod_els = driver.find_elements(By.CLASS_NAME, 'result-content')
-            if not prod_els:
-                return []
+        # page = driver.page_source
+        # f = codecs.open(f'{os.getcwd()}/tests/data/superpharm_test_nodata.html',
+        #                 'w', encoding='utf-8')
+        # f.write(page)
 
-            all_products = []
-            for el in prod_els:
-                product = self.initialize_product(phrase)
-                product['name'] = el.find_element(
-                    By.CLASS_NAME, 'result-title').text.lower()
-                product['description'] = el.find_element(
-                    By.CLASS_NAME, 'result-description').text.lower()
+        result_caption = driver.find_element(
+            By.CLASS_NAME, 'products-count-up'
+        ).text.replace('(', '')
+        if result_caption[:2] == '0 ':
+            return []
 
-                # additional check to narrow down broad search results
-                prod_desc = product['name'] + ' ' + product['description']
-                if not self.check_product_description(phrase, prod_desc):
-                    continue
+        prod_els = driver.find_elements(By.CLASS_NAME, 'result-content')
+        if not prod_els:
+            return []
 
-                # price extraction
-                prod_price = el.find_element(
-                    By.CLASS_NAME, 'price-wrapper') \
-                    .find_element(By.CLASS_NAME, 'after_special').text
-                prod_price = prod_price.replace(',', '.') \
-                    .replace(' zł', '')
-                product['price'] = float(prod_price)
-                # size extraction
-                prod_size = el.find_element(
-                    By.CLASS_NAME, 'custom-select-wrapper').text
-                product['size'] = prod_size.split(':')[-1]
-                # remaining fields
-                prod_img = el.find_element(
-                    By.CLASS_NAME, 'result-thumbnail')
-                product['image_url'] = prod_img.find_element(
-                    By.TAG_NAME, 'img').get_attribute('src')
-                product['url'] = prod_img.find_element(
-                    By.TAG_NAME, 'a').get_attribute('href')
+        all_products = []
+        for el in prod_els:
+            product = self.initialize_product(phrase)
+            product['shop_name'] = self.shop_name
 
-                all_products.append(product)
+            product['name'] = el.find_element(
+                By.CLASS_NAME, 'result-title').text.lower()
+            product['description'] = el.find_element(
+                By.CLASS_NAME, 'result-description').text.lower()
+
+            # additional check to narrow down broad search results
+            prod_desc = product['name'] + ' ' + product['description']
+            if not self.check_product_description(phrase, prod_desc):
+                continue
+
+            # price extraction
+            prod_price = el.find_element(
+                By.CLASS_NAME, 'price-wrapper') \
+                .find_element(By.CLASS_NAME, 'after_special').text
+            prod_price = prod_price.replace(',', '.') \
+                .replace(' zł', '')
+            product['price'] = float(prod_price)
+            # size extraction
+            prod_size = el.find_element(
+                By.CLASS_NAME, 'custom-select-wrapper').text
+            product['size'] = prod_size.split(':')[-1]
+            # remaining fields
+            prod_img = el.find_element(
+                By.CLASS_NAME, 'result-thumbnail')
+            product['image_url'] = prod_img.find_element(
+                By.TAG_NAME, 'img').get_attribute('src')
+            product['url'] = prod_img.find_element(
+                By.TAG_NAME, 'a').get_attribute('href')
+
+            all_products.append(product)
+
+        driver.close()
 
         return all_products
 
