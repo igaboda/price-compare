@@ -37,7 +37,7 @@ def create_product_from_dict(prod: Dict) -> 'Product':
 def update_product_price(product: 'Product', prod_dict: Dict) -> 'Product':
     """Updates price of given product."""
     product.price.price = prod_dict['price']
-    product.save()
+    product.price.save()
 
     return product
 

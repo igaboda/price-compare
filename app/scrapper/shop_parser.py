@@ -78,7 +78,7 @@ class RossmanParser(ShopParser):
             prices_children = el.select_one('[class*=price]').findChildren()
             prices_children = [
                 price.text.replace('zł', '').replace(',', '.').strip()
-                for price in prices_children
+                for price in prices_children if price.text
             ]
             product['price'] = float(min(prices_children))
             # remaining fields
