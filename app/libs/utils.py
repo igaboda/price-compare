@@ -1,8 +1,16 @@
+import json
 from typing import Dict, Union
 
 from shop.models import Shop
 from product.models import Product
 from price.models import Price
+
+
+def read_json_file(file_path):
+    """Reads data from json file."""
+    with open(file_path, 'r') as fp:
+        data = json.load(fp)
+    return data
 
 
 def shop_data_exists() -> bool:
