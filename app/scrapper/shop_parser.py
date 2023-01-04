@@ -25,6 +25,10 @@ class ShopParser:
         raise NotImplementedError('Method must be implemented')
 
     @staticmethod
+    def extract_product_price(*args):
+        raise NotImplementedError('Method must be implemented')
+
+    @staticmethod
     def check_product_description(phrase: str, description: str) -> bool:
         """Checks if all words from search phrase are included in product
         description."""
@@ -89,6 +93,17 @@ class RossmanParser(ShopParser):
 
         return all_products
 
+    @staticmethod
+    def extract_product_price(driver: webdriver) -> float:
+        """Extracts price of single product page."""
+        price_str = driver.find_element(By.CLASS_NAME, 'product-price')\
+            .find_element(By.CLASS_NAME, 'h2').text
+        price = float(price_str.replace(',', '.').replace('zł', '').strip())
+
+        driver.close()
+
+        return price
+
 
 class HebeParser(ShopParser):
     """Parser for extracting Hebe shop data from BeautifulSoup object."""
@@ -114,12 +129,7 @@ class HebeParser(ShopParser):
             product['description'] = prod_desc[0]
             product['size'] = prod_desc[-1].strip()
             # price extraction
-            prod_pricing = el.select_one('[class*=price]')
-            prod_price = prod_pricing.select_one('[class*=sales]') \
-                .contents[0].strip()
-            prod_price = prod_price + '.' + prod_pricing.select_one(
-                '[class*=sales]').select_one('[class*=decimal]').text
-            product['price'] = float(prod_price)
+            product['price'] = self.extract_price(el)
             # remaining fields
             product['image_url'] = el.find('img')['data-srcset'].split('?')[0]
             # srcset = ....png?sw=200&sh=200&sm=fit
@@ -128,6 +138,17 @@ class HebeParser(ShopParser):
             all_products.append(product)
 
         return all_products
+
+    @staticmethod
+    def extract_product_price(el: BeautifulSoup) -> float:
+        """Extracts price of single product from html soup."""
+        prod_pricing = el.select_one('[class*=price]')
+        prod_price = prod_pricing.select_one('[class*=sales]') \
+            .contents[0].strip()
+        prod_price = prod_price + '.' + prod_pricing.select_one(
+            '[class*=sales]').select_one('[class*=decimal]').text
+
+        return float(prod_price)
 
 
 class SuperpharmParser(ShopParser):
@@ -191,6 +212,15 @@ class SuperpharmParser(ShopParser):
         driver.close()
 
         return all_products
+
+    @staticmethod
+    def extract_product_price(soup: BeautifulSoup):
+        """Extracts price of single product from html soup."""
+        price_el = soup.select_one('.product-info-price')\
+            .find('span', attrs={'data-price-amount': True})
+        price = float(price_el.attrs['data-price-amount'])
+
+        return price
 
 
 def get_shop_parser(name: str) -> Union['RossmanParser', 'HebeParser',
