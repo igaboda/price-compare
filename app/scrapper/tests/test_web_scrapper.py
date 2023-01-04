@@ -1,4 +1,3 @@
-import json
 from unittest.mock import patch, call
 
 import pytest
@@ -8,6 +7,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
+from libs.utils import read_json_file
 from conftest import DATA_PATH, DRIVER_PATH
 from scrapper.web_scrapper import Scrapper
 from scrapper.product_search import get_products_by_search_phrases
@@ -60,10 +60,8 @@ def get_driver_mocked(search_url):
 
 @pytest.fixture(scope='module')
 def search_phrases_test_data():
-    """Reads test data from json file."""
-    with open(f'{DATA_PATH}search_phrases_test_data.json', 'r') as fp:
-        data = json.load(fp)
-    return data
+    """Reads search phrases test data from json file."""
+    return read_json_file(f'{DATA_PATH}search_phrases_test_data.json')
 
 
 def search_by_single_phrase_mocked(data):
