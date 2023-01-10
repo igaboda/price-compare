@@ -23,6 +23,6 @@ def initialize_parser(db):
         parser_obj = get_shop_parser(shop)
         shop_data = Shop.objects.defer('shop_name').get(shop_name=shop)
         parser = parser_obj(shop_data.id, shop_data.shop_url,
-                            shop_data.search_param, shop_data.parser_type)
+                            shop_data.search_param)
         return parser
     return _initialize_parser

@@ -9,12 +9,10 @@ class ShopParser:
     """Base class for shop parser. Defines parse_data method for implementation
     in subclass."""
 
-    def __init__(self, shop_id: int, shop_url: str, search_str: str,
-                 parser_type: str):
+    def __init__(self, shop_id: int, shop_url: str, search_str: str):
         self.shop_id = shop_id
         self.url = shop_url
         self.search_str = search_str
-        self.parser_type = parser_type
 
     def initialize_product(self, phrase: str) -> Dict[str, Union[int, str]]:
         """Creates product dictionary to be populated with further data."""
@@ -46,6 +44,8 @@ class ShopParser:
 class RossmanParser(ShopParser):
     """Parser for extracting Rossman shop data from BeautifulSoup object."""
     shop_name = 'rossman'
+    parser_type = 'soup'
+    single_product_parser = 'webdriver'
 
     def parse_data(self, soup: BeautifulSoup, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products in soup.
@@ -95,7 +95,7 @@ class RossmanParser(ShopParser):
 
     @staticmethod
     def extract_product_price(driver: webdriver) -> float:
-        """Extracts price of single product page."""
+        """Extracts price from single product page."""
         price_str = driver.find_element(By.CLASS_NAME, 'product-price')\
             .find_element(By.CLASS_NAME, 'h2').text
         price = float(price_str.replace(',', '.').replace('zł', '').strip())
@@ -108,6 +108,8 @@ class RossmanParser(ShopParser):
 class HebeParser(ShopParser):
     """Parser for extracting Hebe shop data from BeautifulSoup object."""
     shop_name = 'hebe'
+    parser_type = 'soup'
+    single_product_parser = 'soup'
 
     def parse_data(self, soup: BeautifulSoup, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products in soup.
@@ -129,7 +131,7 @@ class HebeParser(ShopParser):
             product['description'] = prod_desc[0]
             product['size'] = prod_desc[-1].strip()
             # price extraction
-            product['price'] = self.extract_price(el)
+            product['price'] = self.extract_product_price(el)
             # remaining fields
             product['image_url'] = el.find('img')['data-srcset'].split('?')[0]
             # srcset = ....png?sw=200&sh=200&sm=fit
@@ -155,6 +157,8 @@ class SuperpharmParser(ShopParser):
     """Parser for extracting Superpharm shop data from search url.
     Uses Chrome webdriver."""
     shop_name = 'superpharm'
+    parser_type = 'webdriver'
+    single_product_parser = 'soup'
 
     def parse_data(self, driver: webdriver, phrase: str = '') -> List[Dict]:
         """Extracts data from html elements for all products loaded on page."""

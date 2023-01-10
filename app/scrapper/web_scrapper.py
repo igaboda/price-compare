@@ -115,6 +115,21 @@ class Scrapper:
 
         return self.products
 
+    def get_price_of_single_product(self, prod_url: str, shop_id: int) -> float:
+        """Extracts price from single product url. Depending on Shop object's
+        single_product_parser uses either Beautiful Soup or Selenium webdriver."""
+        shop = self._find_shop_by_id(shop_id)
+
+        if shop.single_product_parser == 'soup':
+            soup = self._get_soup(prod_url)
+            price = shop.extract_product_price(soup)
+
+        elif shop.single_product_parser == 'webdriver':
+            webdriver = self._get_webdriver(prod_url)
+            price = shop.extract_product_price(webdriver)
+
+        return price
+
 
 
 

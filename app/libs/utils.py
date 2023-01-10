@@ -41,3 +41,12 @@ def update_product_price(product: 'Product', prod_dict: Dict) -> 'Product':
 
     return product
 
+
+def get_product_url(product: 'Product') -> str:
+    """Extracts product url from Product object."""
+    prod_url = product.url
+
+    if product.shop.shop_name not in prod_url:
+        prod_url = product.shop.shop_url + prod_url
+
+    return prod_url
